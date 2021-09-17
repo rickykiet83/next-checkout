@@ -1,9 +1,25 @@
+import { useEffect, useState } from 'react';
+
 import Layout from '../components/Layout';
+import axios from 'axios';
+import constants from '../constants';
 import { useRouter } from 'next/router';
+
 export default function Home() {
   const router = useRouter();
   const { code } = router.query;
-  console.log(code);
+  const [user, setUser] = useState(null);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    if (code != undefined) {
+      (async () => {
+        const { data } = await axios.get(`${constants.endpoint}/links/${code}`);
+        setUser(data.user);
+        setProducts(data.products);
+      })();
+    }
+  }, [code]);
 
   return (
     <>
@@ -11,7 +27,10 @@ export default function Home() {
         <main>
           <div className='py-5 text-center'>
             <h2>Welcome</h2>
-            <p className='lead'>has invited you to buy these products!</p>
+            <p className='lead'>
+              {user?.first_name} {user?.last_name} has invited you to buy these
+              products!
+            </p>
           </div>
           <div className='row g-5'>
             <div className='col-md-5 col-lg-4 order-md-last'>
@@ -19,13 +38,30 @@ export default function Home() {
                 <span className='text-primary'>Products</span>
               </h4>
               <ul className='list-group mb-3'>
-                <li className='list-group-item d-flex justify-content-between lh-sm'>
-                  <div>
-                    <h6 className='my-0'>Product name</h6>
-                    <small className='text-muted'>Brief description</small>
-                  </div>
-                  <span className='text-muted'>$12</span>
-                </li>
+                {products.map((p) => {
+                  return (
+                    <div key={p.id}>
+                      <li className='list-group-item d-flex justify-content-between lh-sm'>
+                        <div>
+                          <h6 className='my-0'>{p.title}</h6>
+                          <small className='text-muted'>{p.description}</small>
+                        </div>
+                        <span className='text-muted'>${p.price}</span>
+                      </li>
+                      <li className='list-group-item d-flex justify-content-between lh-sm'>
+                        <div>
+                          <h6 className='my-0'>Quantity</h6>
+                        </div>
+                        <input
+                          type='number'
+                          min='0'
+                          style={{ width: '65px' }}
+                          className='text-muted form-control'
+                        ></input>
+                      </li>
+                    </div>
+                  );
+                })}
                 <li className='list-group-item d-flex justify-content-between'>
                   <span>Total (USD)</span>
                   <strong>$20</strong>
