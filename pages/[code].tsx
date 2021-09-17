@@ -10,6 +10,7 @@ export default function Home() {
   const { code } = router.query;
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
+  const [quantities, setQuantities] = useState([]);
 
   useEffect(() => {
     if (code != undefined) {
@@ -17,9 +18,36 @@ export default function Home() {
         const { data } = await axios.get(`${constants.endpoint}/links/${code}`);
         setUser(data.user);
         setProducts(data.products);
+        setQuantities(
+          data.products.map((p) => ({
+            product_id: p.id,
+            quantity: 0,
+          }))
+        );
       })();
     }
   }, [code]);
+
+  const changeQuantity = (id: number, quantity: number) => {
+    setQuantities(
+      quantities.map((q) => {
+        if (q.product_id === id) {
+          return {
+            ...q,
+            quantity,
+          };
+        }
+        return q;
+      })
+    );
+  };
+
+  const total = () => {
+    return quantities.reduce((s, q) => {
+      const product = products.find((p) => p.id === q.product_id);
+      return s + product.price * q.quantity;
+    }, 0);
+  };
 
   return (
     <>
@@ -54,6 +82,10 @@ export default function Home() {
                         </div>
                         <input
                           type='number'
+                          defaultValue={0}
+                          onChange={(e) =>
+                            changeQuantity(p.id, parseInt(e.target.value))
+                          }
                           min='0'
                           style={{ width: '65px' }}
                           className='text-muted form-control'
@@ -63,8 +95,8 @@ export default function Home() {
                   );
                 })}
                 <li className='list-group-item d-flex justify-content-between'>
-                  <span>Total (USD)</span>
-                  <strong>$20</strong>
+                  <span>Total (AUD)</span>
+                  <strong>${total()}</strong>
                 </li>
               </ul>
             </div>
