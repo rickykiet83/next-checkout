@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { SyntheticEvent, useEffect, useState } from 'react';
 
 import Layout from '../components/Layout';
 import axios from 'axios';
@@ -11,6 +11,13 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [products, setProducts] = useState([]);
   const [quantities, setQuantities] = useState([]);
+  const [first_name, setFirstName] = useState('');
+  const [last_name, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [address, setAddress] = useState('');
+  const [country, setCountry] = useState('');
+  const [city, setCity] = useState('');
+  const [zip, setZip] = useState('');
 
   useEffect(() => {
     if (code != undefined) {
@@ -47,6 +54,24 @@ export default function Home() {
       const product = products.find((p) => p.id === q.product_id);
       return s + product.price * q.quantity;
     }, 0);
+  };
+
+  const submit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    const { data } = await axios.post(`${constants.endpoint}/orders`, {
+      first_name,
+      last_name,
+      email,
+      address,
+      country,
+      city,
+      zip,
+      code,
+      products: quantities,
+    });
+
+    console.log(data);
   };
 
   return (
@@ -102,7 +127,7 @@ export default function Home() {
             </div>
             <div className='col-md-7 col-lg-8'>
               <h4 className='mb-3'>Personal Info</h4>
-              <form className='needs-validation' noValidate>
+              <form className='needs-validation' onSubmit={submit}>
                 <div className='row g-3'>
                   <div className='col-sm-6'>
                     <label htmlFor='firstName' className='form-label'>
@@ -114,6 +139,7 @@ export default function Home() {
                       id='firstName'
                       placeholder='First Name'
                       defaultValue=''
+                      onChange={(e) => setFirstName(e.target.value)}
                       required
                     />
                     <div className='invalid-feedback'>
@@ -130,29 +156,9 @@ export default function Home() {
                       id='lastName'
                       placeholder='Last Name'
                       defaultValue=''
+                      onChange={(e) => setLastName(e.target.value)}
                       required
                     />
-                    <div className='invalid-feedback'>
-                      Valid last name is required.
-                    </div>
-                  </div>
-                  <div className='col-12'>
-                    <label htmlFor='username' className='form-label'>
-                      Username
-                    </label>
-                    <div className='input-group has-validation'>
-                      <span className='input-group-text'>@</span>
-                      <input
-                        type='text'
-                        className='form-control'
-                        id='username'
-                        placeholder='Username'
-                        required
-                      />
-                      <div className='invalid-feedback'>
-                        Your username is required.
-                      </div>
-                    </div>
                   </div>
                   <div className='col-12'>
                     <label htmlFor='email' className='form-label'>
@@ -163,6 +169,7 @@ export default function Home() {
                       className='form-control'
                       id='email'
                       required
+                      onChange={(e) => setEmail(e.target.value)}
                       placeholder='you@example.com'
                     />
                   </div>
@@ -175,6 +182,7 @@ export default function Home() {
                       className='form-control'
                       id='address'
                       placeholder='1234 Main St'
+                      onChange={(e) => setAddress(e.target.value)}
                       required
                     />
                   </div>
@@ -187,6 +195,7 @@ export default function Home() {
                       type='text'
                       className='form-control'
                       id='country'
+                      onChange={(e) => setCountry(e.target.value)}
                       placeholder='Country'
                     />
                   </div>
@@ -198,6 +207,7 @@ export default function Home() {
                       type='text'
                       className='form-control'
                       id='city'
+                      onChange={(e) => setCity(e.target.value)}
                       placeholder='City'
                     />
                   </div>
@@ -210,6 +220,7 @@ export default function Home() {
                       className='form-control'
                       id='zip'
                       placeholder='zip'
+                      onChange={(e) => setZip(e.target.value)}
                       required
                     />
                   </div>
