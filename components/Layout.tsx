@@ -11,6 +11,8 @@ const Layout = (props) => {
           integrity='sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU'
           crossOrigin='anonymous'
         />
+        {/* eslint-disable-next-line @next/next/no-sync-scripts */}
+        <script src='https://js.stripe.com/v3/'></script>
       </Head>
       <div className='container'>{props.children}</div>
     </>
