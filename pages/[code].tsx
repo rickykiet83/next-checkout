@@ -1,17 +1,13 @@
-import Head from 'next/head';
-import Image from 'next/image';
+import Layout from '../components/Layout';
+import { useRouter } from 'next/router';
 export default function Home() {
+  const router = useRouter();
+  const { code } = router.query;
+  console.log(code);
+
   return (
     <>
-      <Head>
-        <link
-          href='https://cdn.jsdelivr.net/npm/bootstrap@5.1.1/dist/css/bootstrap.min.css'
-          rel='stylesheet'
-          integrity='sha384-F3w7mX95PdgyTmZZMECAngseQB83DfGTowi0iMjiWaeVhAn4FJkqJByhZMI3AhiU'
-          crossOrigin='anonymous'
-        />
-      </Head>
-      <div className='container'>
+      <Layout>
         <main>
           <div className='py-5 text-center'>
             <h2>Welcome</h2>
@@ -158,7 +154,7 @@ export default function Home() {
             </div>
           </div>
         </main>
-      </div>
+      </Layout>
     </>
   );
 }
